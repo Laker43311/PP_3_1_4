@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin page</title>
+    <meta charset="UTF-8" th:insert="~{header :: bootstrap}">
+</head>
+
+<body class="bg-light">
+
+<div th:insert="~{header :: navbar}"></div>
+
+
+<div class="row">
+
+    <div class="col-sm-2 bg-white vh-100 px-0">
+        <div class="nav flex-column nav-pills ps-2"  aria-orientation="vertical" id="v-pills-tab" role="tablist">
+            <a class="nav-link active" href="/admin">Admin</a>
+            <a class="nav-link" href="/user">User</a>
+        </div>
+    </div>
+
+    <div class="col-sm pe-5" >
+        <h1>Admin panel</h1>
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active"
+                        id="home-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#all"
+                        type="button"
+                        role="tab"
+                        aria-controls="home-tab-pane"
+                        aria-selected="true">
+                    Users table
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link"
+                        id="profile-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#new"
+                        type="button"
+                        role="tab"
+                        aria-controls="profile-tab-pane"
+                        aria-selected="false">
+                    New user
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content border">
+            <div class="tab-pane fade show active" id="all">
+                <div class="btn text-start container-fluid border px-3 pt-3 pb-2 bg-light">
+                    <h5>All users</h5>
+                </div>
+                <div class="px-4 py-3">
+                    <table class="table table-striped border-top">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th scope="col">First name</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">Age</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Role</th>
+                                <th scope="col">Edit</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allUsers"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="new">
+                <div class="btn text-start container-fluid border px-3 pt-3 pb-2 bg-light">
+                    <h4>Add new user</h4>
+                </div>
+                <div class="container-fluid bg-white px-0 pt-2 pb-4">
+                    <div class="mx-auto col-sm-4">
+                        <div class="mt-3">
+                            <label for="newName" class="translate-middle-x start-50 position-relative">
+                                <b>First name</b>
+                            </label>
+                            <input type="text" class="form-control " id="newName" name="name">
+                        </div>
+
+                        <div class="mt-3">
+                            <label for="newSurname" class="translate-middle-x start-50 position-relative">
+                                <b>Last name</b>
+                            </label>
+                            <input type="text" class="form-control " id="newSurname" name="surname">
+                        </div>
+
+                        <div class="mt-3">
+                            <label for="newAge" class="translate-middle-x start-50 position-relative">
+                                <b>Age</b>
+                            </label>
+                            <input type="number" class="form-control" id="newAge" name="age">
+                        </div>
+
+                        <div class="mt-3">
+                            <label for="newEmail" class="translate-middle-x start-50 position-relative">
+                                <b>Email</b>
+                            </label>
+                            <input type="email" class="form-control" id="newEmail" name="email">
+                        </div>
+
+                        <div class="mt-3">
+                            <label for="newPassword" class="translate-middle-x start-50 position-relative">
+                                <b>Password</b>
+                            </label>
+                            <input type="text" class="form-control" id="newPassword" name="password">
+                        </div>
+
+
+                        <div class="mt-3">
+                            <label for="newRoles" class="translate-middle-x start-50 position-relative">
+                                <b>Roles</b>
+                            </label>
+                            <select class="form-select" th:name="rolesId" multiple aria-label="multiple select" id="newRoles">
+                                <option th:each="role : ${@userService.getAllRoles()}"
+                                        th:text="${role.roleName}"
+                                        th:value="${role.roleId}">
+                            </select>
+                        </div>
+                    </div>
+                        <button type="button"
+                                class="btn btn-success btn-lg translate-middle-x start-50 position-relative mt-3 "
+                                id="submitNewBtn">
+                            Add new user
+                        </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="editForm">
+    <div class="modal fade editModal" id="editModal" tabindex="-1" aria-labelledby="editLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editLabel">Edit user</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body mx-auto">
+
+                    <div class="mt-2">
+                        <label for="editId" class="translate-middle-x start-50 position-relative">
+                            <b>ID</b>
+                        </label>
+                        <input type="number" readonly class="form-control bg-light" id="editId" name="id">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="editName" class="translate-middle-x start-50 position-relative">
+                            <b>First name</b>
+                        </label>
+                        <input type="text" class="form-control" id="editName" name="name">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="editSurname" class="translate-middle-x start-50 position-relative">
+                            <b>Surname</b>
+                        </label>
+                        <input type="text" class="form-control" id="editSurname" name="surname">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="editAge" class="translate-middle-x start-50 position-relative">
+                            <b>Age</b>
+                        </label>
+                        <input type="number" class="form-control" id="editAge" name="age">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="editEmail" class="translate-middle-x start-50 position-relative">
+                            <b>Email</b>
+                        </label>
+                        <input type="email" class="form-control" id="editEmail" name="email">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="editPassword" class="translate-middle-x start-50 position-relative">
+                            <b>Password</b>
+                        </label>
+                        <input type="text" class="form-control" id="editPassword" name="password">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="editRoles" class="translate-middle-x start-50 position-relative">
+                            <b>Roles</b>
+                        </label>
+                        <select multiple aria-label="multiple select" class="form-control" id="editRoles" name="roles">
+
+                        </select>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeEdit">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="submitEditBtn">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="deleteForm">
+    <div class="modal fade deleteModal" id="deleteModal" tabindex="-1" aria-labelledby="deleteLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteLabel">Delete user</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body mx-auto">
+
+                    <div class="mt-2">
+                        <label for="deleteId" class="translate-middle-x start-50 position-relative">
+                            <b>ID</b>
+                        </label>
+                        <input type="number" readonly class="form-control bg-light" id="deleteId" name="id">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="deleteName" class="translate-middle-x start-50 position-relative">
+                            <b>First name</b>
+                        </label>
+                        <input type="text" readonly class="form-control bg-light" id="deleteName" name="name">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="deleteSurname" class="translate-middle-x start-50 position-relative">
+                            <b>Last name</b>
+                        </label>
+                        <input type="text" readonly class="form-control bg-light" id="deleteSurname" name="surname">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="deleteAge" class="translate-middle-x start-50 position-relative">
+                            <b>Age</b>
+                        </label>
+                        <input type="number" readonly class="form-control bg-light" id="deleteAge" name="age">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="deleteEmail" class="translate-middle-x start-50 position-relative">
+                            <b>Email</b>
+                        </label>
+                        <input type="email" readonly class="form-control bg-light" id="deleteEmail" name="email">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="deletePassword" class="translate-middle-x start-50 position-relative">
+                            <b>Password</b>
+                        </label>
+                        <input type="text" readonly class="form-control bg-light" id="deletePassword" name="password">
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="deleteRoles" class="translate-middle-x start-50 position-relative">
+                            <b>Roles</b>
+                        </label>
+                        <select multiple disabled aria-label="multiple select" class="form-control" id="deleteRoles" name="roles">
+
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeDelete">Close</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="submitDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:insert="~{header :: popa}"></div>
+<script type="module" src="javascript/admin.js"></script>
+<script type="module" src="javascript/onLoad.js"></script>
+</body>
+</html>
