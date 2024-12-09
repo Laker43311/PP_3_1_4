@@ -27,9 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                // Ограничение доступа к /admin только для ADMIN
                 .antMatchers("/admin").hasRole("ADMIN")
-                // Остальные настройки
                 .antMatchers("/users/current").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/users/**").hasRole("ADMIN")
                 .antMatchers("/user").hasAnyRole("ADMIN", "USER")
