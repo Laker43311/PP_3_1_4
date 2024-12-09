@@ -4,74 +4,80 @@ $(document).ready(async function () {
 
     await updateUsersTable()
 
-    $("#submitEditBtn").bind("click", async function() {
-        let patchedUser = {
-            id: $("#editId").val(),
-            name: $("#editName").val(),
-            surname: $("#editSurname").val(),
-            age: $("#editAge").val(),
-            email: $("#editEmail").val(),
-            password: $("#editPassword").val(),
-            roles: []
-        }
-        for (let option of $("#editRoles").children()) {
-            if (option.selected) {
-                let patchedRoleId = option.value
-                await fetch("users/roles/" + patchedRoleId)
-                    .then(response => response.json())
-                    .then(role => {
-                        patchedUser.roles.push(role)
-                    })
+    $("#submitEditBtn").on("click", async function() {
+        try {
+            let patchedUser = {
+                id: $("#editId").val(),
+                name: $("#editName").val(),
+                surname: $("#editSurname").val(),
+                age: parseInt($("#editAge").val()),
+                email: $("#editEmail").val(),
+                password: $("#editPassword").val(),
+                roles: []
             }
-        }
-        let patchedId = $("#editId").val()
-        await fetch("/users/" + patchedId, {
-            method: "PATCH",
-            body: JSON.stringify(patchedUser),
-            headers: {
-                "Content-Type": "application/json"
+            for (let option of $("#editRoles").children()) {
+                if (option.selected) {
+                    let patchedRoleId = option.value
+                    let role = await fetch("/users/roles/" + patchedRoleId)
+                        .then(response => response.json())
+                    patchedUser.roles.push(role)
+                }
             }
-        })
-        await updateUsersTable()
-        if ($("#editId").val() === await utils.getAuthId()) {
-            await utils.updateUserInfo()
+            let patchedId = $("#editId").val()
+            await fetch("/users/" + patchedId, {
+                method: "PATCH",
+                body: JSON.stringify(patchedUser),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            await updateUsersTable()
+            if ($("#editId").val() === await utils.getAuthId()) {
+                await utils.updateUserInfo()
+            }
+            $("#editModal").modal("hide")
+        } catch (error) {
+            console.error("Ошибка при обновлении пользователя:", error)
+            alert("Не удалось обновить пользователя. Проверьте консоль для подробностей.")
         }
-        $("#editModal").modal("hide")
     })
 
-    $("#submitDeleteBtn").bind("click", async function() {
-        let deletedId = $("#deleteId").val()
-        if (deletedId === await utils.getAuthId()) {
-            window.location = "/logout"
+    $("#submitDeleteBtn").on("click", async function() {
+        try {
+            let deletedId = $("#deleteId").val()
+            if (deletedId === await utils.getAuthId()) {
+                window.location = "/logout"
+                return
+            }
+            await fetch("/users/" + deletedId, {
+                method: "DELETE"
+            })
+            await updateUsersTable()
+            $("#deleteModal").modal("hide")
+        } catch (error) {
+            console.error("Ошибка при удалении пользователя:", error)
+            alert("Не удалось удалить пользователя. Проверьте консоль для подробностей.")
         }
-        await fetch("/users/" + deletedId, {
-            method: "DELETE"
-        })
-        await updateUsersTable()
-        $("#deleteModal").modal("hide")
     })
 
-    $("#submitNewBtn").bind("click", async function () {
-        const createdUser = {
-            name: $("#newName").val(),
-            surname: $("#newSurname").val(),
-            age: $("#newAge").val(),
-            email: $("#newEmail").val(),
-            password: $("#newPassword").val(),
-            roles: []
-        };
+    $("#submitNewBtn").on("click", async function () {
+        try {
+            const createdUser = {
+                name: $("#newName").val(),
+                surname: $("#newSurname").val(),
+                age: parseInt($("#newAge").val()),
+                email: $("#newEmail").val(),
+                password: $("#newPassword").val(),
+                roles: []
+            };
 
-        const selectedRoles = Array.from($("#newRoles").children()).filter(option => option.selected);
-        for (const option of selectedRoles) {
-            try {
+            const selectedRoles = Array.from($("#newRoles").children()).filter(option => option.selected);
+            for (const option of selectedRoles) {
                 const response = await fetch("/users/roles/" + option.value);
                 if (!response.ok) throw new Error(`Не удалось получить роль с id ${option.value}`);
                 const role = await response.json();
                 createdUser.roles.push(role);
-            } catch (error) {
-                console.error("Ошибка при получении роли:", error);
             }
-        }
 
             const response = await fetch("/users/addNew", {
                 method: "POST",
@@ -79,131 +85,132 @@ $(document).ready(async function () {
                 body: JSON.stringify(createdUser)
             });
 
-        $("#newName").val("");
-        $("#newSurname").val("");
-        $("#newAge").val("");
-        $("#newEmail").val("");
-        $("#newPassword").val("");
-        $("#newRoles").children().prop("selected", false);
+            if (!response.ok) {
+                const errorResponse = await response.json();
+                alert(`Ошибка при создании пользователя: ${errorResponse.message}`);
+                return;
+            }
 
-        await updateUsersTable();
+            $("#newName").val("");
+            $("#newSurname").val("");
+            $("#newAge").val("");
+            $("#newEmail").val("");
+            $("#newPassword").val("");
+            $("#newRoles").children().prop("selected", false);
 
-        window.location = "/admin";
+            await updateUsersTable();
+
+            $("#newModal").modal("hide")
+        } catch (error) {
+            console.error("Ошибка при создании пользователя:", error)
+            alert("Не удалось создать пользователя. Проверьте консоль для подробностей.")
+        }
     });
 })
 
 async function updateUsersTable() {
     let body = $(".table #allUsers")
     body.empty()
-    let users = await fetch("/users")
-        .then(response => response.json())
-        .then(users => {
-            return users
-        })
-    for (let user of users) {
-        let tr = $("<tr/>")
-        let th = $("<th/>")
+    try {
+        let users = await fetch("/users")
+            .then(response => response.json())
 
-        th.text(user.id)
-        tr.append(th)
+        for (let user of users) {
+            let tr = $("<tr/>")
 
-        let tdName = $("<td/>")
-        tdName.text(user.name)
-        tr.append(tdName)
+            tr.append($("<th/>").text(user.id))
+            tr.append($("<td/>").text(user.name))
+            tr.append($("<td/>").text(user.surname))
+            tr.append($("<td/>").text(user.age))
+            tr.append($("<td/>").text(user.email))
 
-        let tdSurname = $("<td/>")
-        tdSurname.text(user.surname)
-        tr.append(tdSurname)
+            let roles = user.roles.map(role => role.roleName.substring(5)).join(", ")
+            tr.append($("<td/>").text(roles))
 
-        let tdAge = $("<td/>")
-        tdAge.text(user.age)
-        tr.append(tdAge)
+            let editBtn = $("<button/>", {
+                class: 'btn btn-primary',
+                text: 'Edit',
+                value: user.id,
+                click: editFunc
+            })
+            tr.append($("<td/>").append(editBtn))
 
-        let tdEmail = $("<td/>")
-        tdEmail.text(user.email)
-        tr.append(tdEmail)
+            let deleteBtn = $("<button/>", {
+                class: 'btn btn-danger',
+                text: 'Delete',
+                value: user.id,
+                click: deleteFunc
+            })
+            tr.append($("<td/>").append(deleteBtn))
 
-        body.append(tr)
-        let tdRoles = $("<td/>")
-
-        let roles = ""
-        for (let role of user.roles) {
-
-            roles += `${role.roleName.substring(5)} `
+            body.append(tr)
         }
-        tdRoles.text(roles)
-        tr.append(tdRoles)
-
-        let tdEdit = $("<td/>")
-        let editBtn =$("<button id='editBtn' class='btn btn-primary' type='button'>")
-        editBtn.text("Edit")
-        editBtn.val(user.id)
-        editBtn.bind("click", editFunc)
-        tdEdit.append(editBtn)
-        tr.append(tdEdit)
-
-        let tdDelete = $("<td/>")
-        let deleteBtn =$("<button id='deleteBtn' class='btn btn-danger' type='button'>")
-        deleteBtn.text("Delete")
-        deleteBtn.val(user.id)
-        deleteBtn.bind("click", deleteFunc)
-        tdDelete.append(deleteBtn)
-        tr.append(tdDelete)
+    } catch (error) {
+        console.error("Ошибка при обновлении таблицы пользователей:", error)
+        alert("Не удалось обновить таблицу пользователей. Проверьте консоль для подробностей.")
     }
 }
 
 async function editFunc() {
-    let patchedUser = await fetch("/users/" + this.value)
-        .then(response => response.json())
-        .then(user => {
-            return user
-        })
-    let select = $("#editRoles")
-    select.empty()
-    $("#editId").val(patchedUser.id)
-    $("#editName").val(patchedUser.name)
-    $("#editSurname").val(patchedUser.surname)
-    $("#editAge").val(patchedUser.age)
-    $("#editEmail").val(patchedUser.email)
-    // $("#editPassword").val(patchedUser.password)
-    let roles = await fetch("/users/roles/")
-        .then(response => response.json())
-        .then(rolesList => {
-            return rolesList
-        })
-    for (let role of roles) {
-        let option = $("<option/>")
-        option.val(role.roleId)
-        option.text(role.roleName)
-        for (let userRole of patchedUser.roles) {
-            if (role.roleId === userRole.roleId) { //возможно тут изменить ид на ролеид
-                option.attr("selected", true)
-                break
+    try {
+        let patchedUser = await fetch("/users/" + this.value)
+            .then(response => response.json())
+
+        let select = $("#editRoles")
+        select.empty()
+        $("#editId").val(patchedUser.id)
+        $("#editName").val(patchedUser.name)
+        $("#editSurname").val(patchedUser.surname)
+        $("#editAge").val(patchedUser.age)
+        $("#editEmail").val(patchedUser.email)
+        $("#editPassword").val("") // Не заполняем пароль
+
+        let roles = await fetch("/users/roles/")
+            .then(response => response.json())
+
+        for (let role of roles) {
+            let option = $("<option/>", {
+                value: role.roleId,
+                text: role.roleName.substring(5)
+            })
+            for (let userRole of patchedUser.roles) {
+                if (role.roleId === userRole.roleId) {
+                    option.prop("selected", true)
+                    break
+                }
             }
+            select.append(option)
         }
-        select.append(option)
+        $("#editModal").modal("show")
+    } catch (error) {
+        console.error("Ошибка при получении данных пользователя для редактирования:", error)
+        alert("Не удалось загрузить данные пользователя. Проверьте консоль для подробностей.")
     }
-    $("#editModal").modal("show")
 }
 
 async function deleteFunc() {
-    let deletedUser = await fetch("/users/" + this.value)
-        .then(response => response.json())
-        .then(user => {
-            return user
-        })
-    let select = $("#deleteRoles")
-    select.empty()
-    $("#deleteId").val(deletedUser.id)
-    $("#deleteName").val(deletedUser.name)
-    $("#deleteSurname").val(deletedUser.surname)
-    $("#deleteAge").val(deletedUser.age)
-    $("#deleteEmail").val(deletedUser.email)
-    $("#deletePassword").val(deletedUser.password)
-    for (let role of deletedUser.roles) {
-        let option = $("<option/>")
-        option.text(role.roleName)
-        select.append(option)
+    try {
+        let deletedUser = await fetch("/users/" + this.value)
+            .then(response => response.json())
+
+        let select = $("#deleteRoles")
+        select.empty()
+        $("#deleteId").val(deletedUser.id)
+        $("#deleteName").val(deletedUser.name)
+        $("#deleteSurname").val(deletedUser.surname)
+        $("#deleteAge").val(deletedUser.age)
+        $("#deleteEmail").val(deletedUser.email)
+        $("#deletePassword").val(deletedUser.password)
+
+        for (let role of deletedUser.roles) {
+            let option = $("<option/>", {
+                text: role.roleName.substring(5)
+            })
+            select.append(option)
+        }
+        $("#deleteModal").modal("show")
+    } catch (error) {
+        console.error("Ошибка при получении данных пользователя для удаления:", error)
+        alert("Не удалось загрузить данные пользователя. Проверьте консоль для подробностей.")
     }
-    $("#deleteModal").modal("show")
 }

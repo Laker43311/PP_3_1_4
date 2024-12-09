@@ -1,5 +1,5 @@
 export async function getAuthUser() {
-    let response = await fetch("/users/current")
+    let response = await fetch("/user/current")
     return response.ok
         ? response.json()
         : null
@@ -7,10 +7,7 @@ export async function getAuthUser() {
 
 export async function getAuthId() {
     return await getAuthUser()
-        .then(authUser => authUser.id)
-        .then(id => {
-            return id === undefined ? null : id
-        })
+        .then(authUser => authUser ? authUser.id : null)
 }
 
 export async function updateUserInfo() {
@@ -24,9 +21,9 @@ export async function updateUserInfo() {
         $("#userEmail").text(authUser.email)
         let rolesText = " with roles: "
         for (let role of authUser.roles) {
-            rolesText += `${role.roleName.substring(5)},  `
+            rolesText += `${role.roleName.substring(5)}, `
         }
-        $("#userRolesNavbar").text(rolesText.substring(0, rolesText.length - 3))
-        $("#userRoles").text(rolesText.substring(12, rolesText.length - 3))
+        $("#userRolesNavbar").text(rolesText.slice(0, -2))
+        $("#userRoles").text(rolesText.slice(12, -2))
     }
 }

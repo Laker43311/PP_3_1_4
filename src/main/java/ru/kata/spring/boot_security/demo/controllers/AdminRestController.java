@@ -8,7 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.services.UserService;
+import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
 import ru.kata.spring.boot_security.demo.util.UserNotCreatedException;
 import ru.kata.spring.boot_security.demo.util.UserValidator;
 
@@ -20,28 +20,28 @@ import java.util.List;
 @RequestMapping("/users")
 public class AdminRestController {
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
     private final UserValidator userValidator;
 
     @Autowired
-    public AdminRestController(UserService userService, UserValidator userValidator) {
-        this.userService = userService;
+    public AdminRestController(UserServiceImpl userServiceImpl, UserValidator userValidator) {
+        this.userServiceImpl = userServiceImpl;
         this.userValidator = userValidator;
     }
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+        return new ResponseEntity<>(userServiceImpl.getAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
-        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
+        return new ResponseEntity<>(userServiceImpl.getUserById(id), HttpStatus.OK);
     }
 
     @GetMapping("/current")
     public ResponseEntity<User> getCurrentUser(Principal principal) {
-        return new ResponseEntity<>(userService.findByUsername(principal.getName()), HttpStatus.OK);
+        return new ResponseEntity<>(userServiceImpl.findByUsername(principal.getName()), HttpStatus.OK);
     }
 
     @PostMapping("/addNew")
@@ -63,7 +63,7 @@ public class AdminRestController {
             throw new UserNotCreatedException(errorMessage.toString());
         }
 
-        userService.addUser(user);
+        userServiceImpl.addUser(user);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -88,25 +88,25 @@ public class AdminRestController {
             throw new UserNotCreatedException(errorMessage.toString());
         }
 
-        userService.updateUser(id, user);
+        userServiceImpl.updateUser(id, user);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+        userServiceImpl.deleteUser(id);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @GetMapping("/roles")
     public ResponseEntity<List<Role>> getAllRoles() {
-        return new ResponseEntity<>(userService.getAllRoles(), HttpStatus.OK);
+        return new ResponseEntity<>(userServiceImpl.getAllRoles(), HttpStatus.OK);
     }
 
     @GetMapping("/roles/{id}")
     public ResponseEntity<Role> getRoleById(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getRoleById(id), HttpStatus.OK);
+        return new ResponseEntity<>(userServiceImpl.getRoleById(id), HttpStatus.OK);
     }
 }

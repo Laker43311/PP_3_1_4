@@ -5,15 +5,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.services.UserService;
+import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
 
 @Component
 public class UserValidator implements Validator {
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
     @Autowired
-    public UserValidator(UserService userService) {
-        this.userService = userService;
+    public UserValidator(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
     }
 
     @Override
@@ -25,8 +25,8 @@ public class UserValidator implements Validator {
     public void validate(Object o, Errors errors) {
         User user = (User) o;
 
-        if (userService.findByUsername(user.getEmail()) != null) {
-            User userFromDb = userService.findByUsername(user.getEmail());
+        if (userServiceImpl.findByUsername(user.getEmail()) != null) {
+            User userFromDb = userServiceImpl.findByUsername(user.getEmail());
             if (!userFromDb.getId().equals(user.getId())) {
                 errors.rejectValue("email", "", "Email already exists");
             }

@@ -9,7 +9,6 @@
 
 <div th:insert="~{header :: navbar}"></div>
 
-
 <div class="row">
 
     <div class="col-sm-2 bg-white vh-100 px-0">
@@ -55,16 +54,16 @@
                 <div class="px-4 py-3">
                     <table class="table table-striped border-top">
                         <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th scope="col">First name</th>
-                                <th scope="col">Last name</th>
-                                <th scope="col">Age</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Role</th>
-                                <th scope="col">Edit</th>
-                                <th scope="col">Delete</th>
-                            </tr>
+                        <tr>
+                            <th>Id</th>
+                            <th scope="col">First name</th>
+                            <th scope="col">Last name</th>
+                            <th scope="col">Age</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Edit</th>
+                            <th scope="col">Delete</th>
+                        </tr>
                         </thead>
                         <tbody id="allUsers"></tbody>
                     </table>
@@ -77,63 +76,63 @@
                 <div class="container-fluid bg-white px-0 pt-2 pb-4">
                     <div class="mx-auto col-sm-4">
                         <div class="mt-3">
-                            <label for="newName" class="translate-middle-x start-50 position-relative">
+                            <label for="newName" class="form-label">
                                 <b>First name</b>
                             </label>
                             <input type="text" class="form-control " id="newName" name="name">
                         </div>
 
                         <div class="mt-3">
-                            <label for="newSurname" class="translate-middle-x start-50 position-relative">
+                            <label for="newSurname" class="form-label">
                                 <b>Last name</b>
                             </label>
                             <input type="text" class="form-control " id="newSurname" name="surname">
                         </div>
 
                         <div class="mt-3">
-                            <label for="newAge" class="translate-middle-x start-50 position-relative">
+                            <label for="newAge" class="form-label">
                                 <b>Age</b>
                             </label>
                             <input type="number" class="form-control" id="newAge" name="age">
                         </div>
 
                         <div class="mt-3">
-                            <label for="newEmail" class="translate-middle-x start-50 position-relative">
+                            <label for="newEmail" class="form-label">
                                 <b>Email</b>
                             </label>
                             <input type="email" class="form-control" id="newEmail" name="email">
                         </div>
 
                         <div class="mt-3">
-                            <label for="newPassword" class="translate-middle-x start-50 position-relative">
+                            <label for="newPassword" class="form-label">
                                 <b>Password</b>
                             </label>
-                            <input type="text" class="form-control" id="newPassword" name="password">
+                            <input type="password" class="form-control" id="newPassword" name="password">
                         </div>
 
-
                         <div class="mt-3">
-                            <label for="newRoles" class="translate-middle-x start-50 position-relative">
+                            <label for="newRoles" class="form-label">
                                 <b>Roles</b>
                             </label>
                             <select class="form-select" th:name="rolesId" multiple aria-label="multiple select" id="newRoles">
-                                <option th:each="role : ${@userService.getAllRoles()}"
+                                <option th:each="role : ${@userServiceImpl.getAllRoles()}"
                                         th:text="${role.roleName}"
                                         th:value="${role.roleId}">
                             </select>
                         </div>
                     </div>
-                        <button type="button"
-                                class="btn btn-success btn-lg translate-middle-x start-50 position-relative mt-3 "
-                                id="submitNewBtn">
-                            Add new user
-                        </button>
+                    <button type="button"
+                            class="btn btn-success btn-lg d-block mx-auto mt-3"
+                            id="submitNewBtn">
+                        Add new user
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Edit Modal -->
 <div id="editForm">
     <div class="modal fade editModal" id="editModal" tabindex="-1" aria-labelledby="editLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -145,49 +144,49 @@
                 <div class="modal-body mx-auto">
 
                     <div class="mt-2">
-                        <label for="editId" class="translate-middle-x start-50 position-relative">
+                        <label for="editId" class="form-label">
                             <b>ID</b>
                         </label>
                         <input type="number" readonly class="form-control bg-light" id="editId" name="id">
                     </div>
 
                     <div class="mt-3">
-                        <label for="editName" class="translate-middle-x start-50 position-relative">
+                        <label for="editName" class="form-label">
                             <b>First name</b>
                         </label>
                         <input type="text" class="form-control" id="editName" name="name">
                     </div>
 
                     <div class="mt-3">
-                        <label for="editSurname" class="translate-middle-x start-50 position-relative">
+                        <label for="editSurname" class="form-label">
                             <b>Surname</b>
                         </label>
                         <input type="text" class="form-control" id="editSurname" name="surname">
                     </div>
 
                     <div class="mt-3">
-                        <label for="editAge" class="translate-middle-x start-50 position-relative">
+                        <label for="editAge" class="form-label">
                             <b>Age</b>
                         </label>
                         <input type="number" class="form-control" id="editAge" name="age">
                     </div>
 
                     <div class="mt-3">
-                        <label for="editEmail" class="translate-middle-x start-50 position-relative">
+                        <label for="editEmail" class="form-label">
                             <b>Email</b>
                         </label>
                         <input type="email" class="form-control" id="editEmail" name="email">
                     </div>
 
                     <div class="mt-3">
-                        <label for="editPassword" class="translate-middle-x start-50 position-relative">
+                        <label for="editPassword" class="form-label">
                             <b>Password</b>
                         </label>
-                        <input type="text" class="form-control" id="editPassword" name="password">
+                        <input type="password" class="form-control" id="editPassword" name="password">
                     </div>
 
                     <div class="mt-3">
-                        <label for="editRoles" class="translate-middle-x start-50 position-relative">
+                        <label for="editRoles" class="form-label">
                             <b>Roles</b>
                         </label>
                         <select multiple aria-label="multiple select" class="form-control" id="editRoles" name="roles">
@@ -197,14 +196,15 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeEdit">Close</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="submitEditBtn">Edit</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeEdit">Close</button>
+                    <button type="button" class="btn btn-primary" id="submitEditBtn">Edit</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Delete Modal -->
 <div id="deleteForm">
     <div class="modal fade deleteModal" id="deleteModal" tabindex="-1" aria-labelledby="deleteLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -216,49 +216,49 @@
                 <div class="modal-body mx-auto">
 
                     <div class="mt-2">
-                        <label for="deleteId" class="translate-middle-x start-50 position-relative">
+                        <label for="deleteId" class="form-label">
                             <b>ID</b>
                         </label>
                         <input type="number" readonly class="form-control bg-light" id="deleteId" name="id">
                     </div>
 
                     <div class="mt-3">
-                        <label for="deleteName" class="translate-middle-x start-50 position-relative">
+                        <label for="deleteName" class="form-label">
                             <b>First name</b>
                         </label>
                         <input type="text" readonly class="form-control bg-light" id="deleteName" name="name">
                     </div>
 
                     <div class="mt-3">
-                        <label for="deleteSurname" class="translate-middle-x start-50 position-relative">
+                        <label for="deleteSurname" class="form-label">
                             <b>Last name</b>
                         </label>
                         <input type="text" readonly class="form-control bg-light" id="deleteSurname" name="surname">
                     </div>
 
                     <div class="mt-3">
-                        <label for="deleteAge" class="translate-middle-x start-50 position-relative">
+                        <label for="deleteAge" class="form-label">
                             <b>Age</b>
                         </label>
                         <input type="number" readonly class="form-control bg-light" id="deleteAge" name="age">
                     </div>
 
                     <div class="mt-3">
-                        <label for="deleteEmail" class="translate-middle-x start-50 position-relative">
+                        <label for="deleteEmail" class="form-label">
                             <b>Email</b>
                         </label>
                         <input type="email" readonly class="form-control bg-light" id="deleteEmail" name="email">
                     </div>
 
                     <div class="mt-3">
-                        <label for="deletePassword" class="translate-middle-x start-50 position-relative">
+                        <label for="deletePassword" class="form-label">
                             <b>Password</b>
                         </label>
-                        <input type="text" readonly class="form-control bg-light" id="deletePassword" name="password">
+                        <input type="password" readonly class="form-control bg-light" id="deletePassword" name="password">
                     </div>
 
                     <div class="mt-3">
-                        <label for="deleteRoles" class="translate-middle-x start-50 position-relative">
+                        <label for="deleteRoles" class="form-label">
                             <b>Roles</b>
                         </label>
                         <select multiple disabled aria-label="multiple select" class="form-control" id="deleteRoles" name="roles">
@@ -270,7 +270,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeDelete">Close</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="submitDeleteBtn">Delete</button>
+                    <button type="button" class="btn btn-danger" id="submitDeleteBtn">Delete</button>
                 </div>
             </div>
         </div>
