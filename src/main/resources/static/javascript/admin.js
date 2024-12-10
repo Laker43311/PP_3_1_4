@@ -91,6 +91,7 @@ $(document).ready(async function () {
                 return;
             }
 
+            // Очистить поля ввода
             $("#newName").val("");
             $("#newSurname").val("");
             $("#newAge").val("");
@@ -98,9 +99,15 @@ $(document).ready(async function () {
             $("#newPassword").val("");
             $("#newRoles").children().prop("selected", false);
 
+
             await updateUsersTable();
 
-            $("#newModal").modal("hide")
+
+            $("#newModal").modal("hide");
+
+
+            $('#home-tab').click();
+
         } catch (error) {
             console.error("Ошибка при создании пользователя:", error)
             alert("Не удалось создать пользователя. Проверьте консоль для подробностей.")
@@ -163,7 +170,7 @@ async function editFunc() {
         $("#editSurname").val(patchedUser.surname)
         $("#editAge").val(patchedUser.age)
         $("#editEmail").val(patchedUser.email)
-        $("#editPassword").val("") // Не заполняем пароль
+        $("#editPassword").val("")
 
         let roles = await fetch("/users/roles/")
             .then(response => response.json())
